@@ -38,6 +38,7 @@ const AlumniDirectory = () => {
         page: pagination.page,
         limit: pagination.limit,
         search: searchTerm,
+        role: 'alumni', // Only fetch alumni
         ...filters
       };
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { eventService, userService, mentorshipService } from '../services/apiService';
 import {
@@ -9,12 +9,14 @@ import {
   TrendingUpIcon,
   ClockIcon,
   MapPinIcon,
-  UserPlusIcon
+  UserPlusIcon,
+  PlusIcon
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalUsers: 0,
     upcomingEvents: 0,
@@ -24,6 +26,9 @@ const Dashboard = () => {
   const [recentEvents, setRecentEvents] = useState([]);
   const [recentMentorshipRequests, setRecentMentorshipRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showMentorForm, setShowMentorForm] = useState(false);
+  const [mentorshipAreas, setMentorshipAreas] = useState([]);
+  const [isBecomingMentor, setIsBecomingMentor] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -81,6 +86,51 @@ const Dashboard = () => {
       case 'completed': return 'bg-blue-100 text-blue-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleBecomeMentor = async () => {
+    if (mentorshipAreas.length === 0) {
+      toast.error('Please add at least one mentorship area');
+      return;
+    }
+
+    try {
+      setIsBecomingMentor(true);
+      const response = await updateProfile({
+        isMentor: true,
+        mentorshipAreas: mentorshipAreas
+      });
+
+      if (response.success) {
+        toast.success('You are now a mentor! Students can find you in the alumni directory.');
+        setShowMentorForm(false);
+      } else {
+        toast.error(response.message || 'Failed to become a mentor');
+      }
+    } catch (error) {
+      console.error('Error becoming mentor:', error);
+      toast.error('Failed to become a mentor. Please try again.');
+    } finally {
+      setIsBecomingMentor(false);
+    }
+  };
+
+  const addMentorshipArea = () => {
+    setMentorshipAreas([...mentorshipAreas, '']);
+  };
+
+  const updateMentorshipArea = (index, value) => {
+    const newAreas = [...mentorshipAreas];
+    newAreas[index] = value;
+    setMentorshipAreas(newAreas);
+  };
+
+  const removeMentorshipArea = (index) => {
+    setMentorshipAreas(mentorshipAreas.filter((_, i) => i !== index));
+  };
+
+  const handleCreateEvent = () => {
+    navigate('/events/create');
   };
 
   if (isLoading) {
@@ -203,16 +253,59 @@ const Dashboard = () => {
               </div>
             </Link>
 
-            <Link
-              to="/mentorship"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <MessageCircleIcon className="h-6 w-6 text-primary-600 mr-3" />
-              <div>
-                <p className="font-medium text-gray-900">Find Mentors</p>
-                <p className="text-sm text-gray-500">Get guidance and advice</p>
-              </div>
-            </Link>
+            {/* Alumni-specific actions */}
+            {user?.role === 'alumni' && (
+              <>
+                {!user?.isMentor ? (
+                  <div 
+                    onClick={() => setShowMentorForm(true)}
+                    className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    <MessageCircleIcon className="h-6 w-6 text-green-600 mr-3" />
+                    <div>
+                      <p className="font-medium text-gray-900">Become a Mentor</p>
+                      <p className="text-sm text-gray-500">Share your expertise with students</p>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    to="/mentorship"
+                    className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <MessageCircleIcon className="h-6 w-6 text-green-600 mr-3" />
+                    <div>
+                      <p className="font-medium text-gray-900">My Mentorship</p>
+                      <p className="text-sm text-gray-500">Manage your mentorship requests</p>
+                    </div>
+                  </Link>
+                )}
+
+                <div 
+                  onClick={handleCreateEvent}
+                  className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <PlusIcon className="h-6 w-6 text-blue-600 mr-3" />
+                  <div>
+                    <p className="font-medium text-gray-900">Create Event</p>
+                    <p className="text-sm text-gray-500">Plan and organize gatherings</p>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Student-specific actions */}
+            {user?.role === 'student' && (
+              <Link
+                to="/alumni"
+                className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <MessageCircleIcon className="h-6 w-6 text-primary-600 mr-3" />
+                <div>
+                  <p className="font-medium text-gray-900">Find a Mentor</p>
+                  <p className="text-sm text-gray-500">Get guidance from alumni mentors</p>
+                </div>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -323,6 +416,64 @@ const Dashboard = () => {
               >
                 Update Profile
               </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Become a Mentor Modal */}
+      {showMentorForm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Become a Mentor</h3>
+            <p className="text-gray-600 mb-4">
+              Share your expertise and help students succeed. Add the areas where you can provide mentorship.
+            </p>
+            
+            <div className="space-y-3 mb-4">
+              {mentorshipAreas.map((area, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={area}
+                    onChange={(e) => updateMentorshipArea(index, e.target.value)}
+                    placeholder="e.g., Software Development, Career Guidance"
+                    className="flex-1 form-input"
+                  />
+                  <button
+                    onClick={() => removeMentorshipArea(index)}
+                    className="text-red-600 hover:text-red-500"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              
+              <button
+                onClick={addMentorshipArea}
+                className="w-full p-2 border border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                + Add Mentorship Area
+              </button>
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  setShowMentorForm(false);
+                  setMentorshipAreas([]);
+                }}
+                className="flex-1 btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBecomeMentor}
+                disabled={isBecomingMentor || mentorshipAreas.length === 0}
+                className="flex-1 btn-primary disabled:opacity-50"
+              >
+                {isBecomingMentor ? 'Becoming Mentor...' : 'Become a Mentor'}
+              </button>
             </div>
           </div>
         </div>

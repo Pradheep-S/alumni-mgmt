@@ -27,8 +27,10 @@ router.post('/:id/comments', addComment);
 
 // Admin only routes
 router.get('/admin/stats', authorize('admin'), getEventStats);
-router.post('/', authorize('admin'), validateEvent, createEvent);
-router.put('/:id', authorize('admin'), validateEvent, updateEvent);
-router.delete('/:id', authorize('admin'), deleteEvent);
+
+// Alumni and Admin can create, update, delete events
+router.post('/', authorize('admin', 'alumni'), validateEvent, createEvent);
+router.put('/:id', authorize('admin', 'alumni'), validateEvent, updateEvent);
+router.delete('/:id', authorize('admin', 'alumni'), deleteEvent);
 
 module.exports = router;

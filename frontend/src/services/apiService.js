@@ -11,6 +11,9 @@ export const userService = {
   // Get mentors
   getMentors: (params = {}) => api.get('/users/mentors', { params }),
   
+  // Update user profile
+  updateProfile: (userData) => api.put('/auth/profile', userData),
+  
   // Update user (admin only)
   updateUser: (id, userData) => api.put(`/users/${id}`, userData),
   
@@ -29,13 +32,13 @@ export const eventService = {
   // Get event by ID
   getEventById: (id) => api.get(`/events/${id}`),
   
-  // Create event (admin only)
+  // Create event (alumni and admin)
   createEvent: (eventData) => api.post('/events', eventData),
   
-  // Update event (admin only)
+  // Update event (alumni and admin)
   updateEvent: (id, eventData) => api.put(`/events/${id}`, eventData),
   
-  // Delete event (admin only)
+  // Delete event (alumni and admin)
   deleteEvent: (id) => api.delete(`/events/${id}`),
   
   // RSVP to event

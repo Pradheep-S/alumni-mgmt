@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import AlumniDirectory from './pages/AlumniDirectory';
 import Events from './pages/Events';
 import EventDetails from './pages/EventDetails';
+import CreateEvent from './pages/CreateEvent';
 import Mentorship from './pages/Mentorship';
 import Profile from './pages/Profile';
 import AdminPanel from './pages/AdminPanel';
@@ -62,6 +63,11 @@ function App() {
               <Route path="alumni" element={<AlumniDirectory />} />
               <Route path="events" element={<Events />} />
               <Route path="events/:id" element={<EventDetails />} />
+              <Route path="events/create" element={
+                <ProtectedRoute roles={['alumni', 'admin']}>
+                  <CreateEvent />
+                </ProtectedRoute>
+              } />
               <Route path="mentorship" element={<Mentorship />} />
               <Route path="profile" element={<Profile />} />
               
