@@ -110,11 +110,22 @@ const AlumniDirectory = () => {
               value={filters.department}
               onChange={(e) => handleFilterChange('department', e.target.value)}
             >
-              <option value="">All Departments</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Business Administration">Business Administration</option>
-              <option value="Engineering">Engineering</option>
-              <option value="Medicine">Medicine</option>
+              <option value="">All Engineering Departments</option>
+              <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+              <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
+              <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Biomedical Engineering">Biomedical Engineering</option>
+              <option value="Chemical Engineering">Chemical Engineering</option>
+              <option value="Textile Technology">Textile Technology</option>
+              <option value="Food Technology">Food Technology</option>
+              <option value="Automobile Engineering">Automobile Engineering</option>
+              <option value="Aeronautical Engineering">Aeronautical Engineering</option>
+              <option value="Production Engineering">Production Engineering</option>
+              <option value="Industrial Engineering">Industrial Engineering</option>
+              <option value="Biotechnology">Biotechnology</option>
             </select>
 
             <select
@@ -216,11 +227,38 @@ const AlumniDirectory = () => {
                     </p>
                   )}
 
+                  {/* Contact Information */}
+                  {(person.emailVisibility?.primaryEmail || person.emailVisibility?.additionalEmail) && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Contact:</h4>
+                      <div className="space-y-1">
+                        {person.emailVisibility?.primaryEmail && person.email && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <MailIcon className="h-3 w-3 mr-2 flex-shrink-0" />
+                            <a href={`mailto:${person.email}`} className="hover:text-primary-600">
+                              {person.email}
+                            </a>
+                          </div>
+                        )}
+                        {person.emailVisibility?.additionalEmail && person.additionalEmail && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <MailIcon className="h-3 w-3 mr-2 flex-shrink-0" />
+                            <a href={`mailto:${person.additionalEmail}`} className="hover:text-primary-600">
+                              {person.additionalEmail}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="mt-4 flex items-center space-x-3">
-                    <button className="btn-primary text-sm">
-                      <MailIcon className="h-4 w-4 mr-1" />
-                      Connect
-                    </button>
+                    {(person.emailVisibility?.primaryEmail || person.emailVisibility?.additionalEmail) && (
+                      <button className="btn-primary text-sm">
+                        <MailIcon className="h-4 w-4 mr-1" />
+                        Connect
+                      </button>
+                    )}
                     {person.linkedinProfile && (
                       <a
                         href={person.linkedinProfile}

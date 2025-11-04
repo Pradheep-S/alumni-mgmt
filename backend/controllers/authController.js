@@ -177,7 +177,9 @@ const updateProfile = async (req, res, next) => {
       linkedinProfile: req.body.linkedinProfile,
       isMentor: req.body.isMentor,
       mentorshipAreas: req.body.mentorshipAreas,
-      profilePicture: req.body.profilePicture
+      profilePicture: req.body.profilePicture,
+      additionalEmail: req.body.additionalEmail,
+      emailVisibility: req.body.emailVisibility
     };
 
     // Remove undefined fields

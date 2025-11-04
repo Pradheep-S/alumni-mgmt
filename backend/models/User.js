@@ -25,6 +25,25 @@ const userSchema = new mongoose.Schema({
       'Please provide a valid email'
     ]
   },
+  additionalEmail: {
+    type: String,
+    lowercase: true,
+    trim: true,
+    match: [
+      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      'Please provide a valid email'
+    ]
+  },
+  emailVisibility: {
+    primaryEmail: {
+      type: Boolean,
+      default: false
+    },
+    additionalEmail: {
+      type: Boolean,
+      default: false
+    }
+  },
   password: {
     type: String,
     required: [true, 'Please provide password'],

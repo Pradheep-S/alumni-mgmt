@@ -13,6 +13,11 @@ const Profile = () => {
     bio: user?.bio || '',
     linkedinProfile: user?.linkedinProfile || '',
     isMentor: user?.isMentor || false,
+    additionalEmail: user?.additionalEmail || '',
+    emailVisibility: {
+      primaryEmail: user?.emailVisibility?.primaryEmail || false,
+      additionalEmail: user?.emailVisibility?.additionalEmail || false
+    },
     currentJob: {
       title: user?.currentJob?.title || '',
       company: user?.currentJob?.company || '',
@@ -31,6 +36,15 @@ const Profile = () => {
         currentJob: {
           ...prev.currentJob,
           [field]: value
+        }
+      }));
+    } else if (name.startsWith('emailVisibility.')) {
+      const field = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        emailVisibility: {
+          ...prev.emailVisibility,
+          [field]: checked
         }
       }));
     } else {
@@ -103,13 +117,29 @@ const Profile = () => {
 
             <div>
               <label className="form-label">Department</label>
-              <input
-                type="text"
+              <select
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
                 className="form-input"
-              />
+              >
+                <option value="">Select Department</option>
+                <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
+                <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="Biomedical Engineering">Biomedical Engineering</option>
+                <option value="Chemical Engineering">Chemical Engineering</option>
+                <option value="Textile Technology">Textile Technology</option>
+                <option value="Food Technology">Food Technology</option>
+                <option value="Automobile Engineering">Automobile Engineering</option>
+                <option value="Aeronautical Engineering">Aeronautical Engineering</option>
+                <option value="Production Engineering">Production Engineering</option>
+                <option value="Industrial Engineering">Industrial Engineering</option>
+                <option value="Biotechnology">Biotechnology</option>
+              </select>
             </div>
 
             <div>
@@ -132,6 +162,62 @@ const Profile = () => {
                 onChange={handleChange}
                 className="form-input"
               />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-900">Email Settings</h3>
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="form-label">Primary Email (Login Email)</label>
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="email"
+                    value={user?.email || ''}
+                    className="form-input flex-1"
+                    disabled
+                    placeholder="Your login email"
+                  />
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="emailVisibility.primaryEmail"
+                      checked={formData.emailVisibility.primaryEmail}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Make visible to others</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <label className="form-label">Additional Email (Optional)</label>
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="email"
+                    name="additionalEmail"
+                    value={formData.additionalEmail}
+                    onChange={handleChange}
+                    className="form-input flex-1"
+                    placeholder="Enter additional email address"
+                  />
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="emailVisibility.additionalEmail"
+                      checked={formData.emailVisibility.additionalEmail}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                      disabled={!formData.additionalEmail}
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Make visible to others</span>
+                  </label>
+                </div>
+                <p className="mt-1 text-sm text-gray-500">
+                  You can add an additional email address that others can use to contact you
+                </p>
+              </div>
             </div>
           </div>
 

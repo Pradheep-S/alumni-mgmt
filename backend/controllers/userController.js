@@ -128,7 +128,9 @@ const updateUser = async (req, res, next) => {
       isMentor: req.body.isMentor,
       mentorshipAreas: req.body.mentorshipAreas,
       isActive: req.body.isActive,
-      profilePicture: req.body.profilePicture
+      profilePicture: req.body.profilePicture,
+      additionalEmail: req.body.additionalEmail,
+      emailVisibility: req.body.emailVisibility
     };
 
     // Remove undefined fields
